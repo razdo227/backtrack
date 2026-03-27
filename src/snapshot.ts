@@ -10,8 +10,39 @@ export interface CreateSnapshotOptions {
   includeExtensions?: string[];
 }
 
+async function readIgnoreFile(root: string): Promise<string[]> {
+  const ignoreFile = path.join(root, '.backtrackignore');
+
+  try {
+    const raw = await fs.readFile(ignoreFile, 'utf8');
+    return raw
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith('#'));
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+function shouldIgnore(relativePath: string, ignoreEntries: string[]): boolean {
+  const normalizedPath = relativePath.split(path.sep).join('/');
+
+  return ignoreEntries.some((entry) => {
+    const normalizedEntry = entry.replace(/\\/g, '/').replace(/\/$/, '');
+
+    if (!normalizedEntry) {
+      return false;
+    }
+
+    return normalizedPath === normalizedEntry || normalizedPath.startsWith(`${normalizedEntry}/`);
+  });
+}
+
 async function listFiles(root: string, options: CreateSnapshotOptions): Promise<string[]> {
-  const ignore = new Set([...(options.ignore ?? []), ...DEFAULT_IGNORES]);
+  const ignoreEntries = [...DEFAULT_IGNORES, ...(await readIgnoreFile(root)), ...(options.ignore ?? [])];
   const normalizedExtensions = options.includeExtensions?.map((ext) => ext.toLowerCase());
   const results: string[] = [];
 
@@ -19,17 +50,21 @@ async function listFiles(root: string, options: CreateSnapshotOptions): Promise<
     const entries = await fs.readdir(currentDir, { withFileTypes: true });
 
     for (const entry of entries) {
-      if (ignore.has(entry.name)) {
+      if (DEFAULT_IGNORES.has(entry.name)) {
         continue;
       }
 
       const absolutePath = path.join(currentDir, entry.name);
+      const relativePath = path.relative(root, absolutePath);
+      if (shouldIgnore(relativePath, ignoreEntries)) {
+        continue;
+      }
+
       if (entry.isDirectory()) {
         await walk(absolutePath);
         continue;
       }
 
-      const relativePath = path.relative(root, absolutePath);
       if (normalizedExtensions?.length) {
         const ext = path.extname(entry.name).toLowerCase();
         if (!normalizedExtensions.includes(ext)) {

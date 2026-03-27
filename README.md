@@ -43,6 +43,16 @@ npm test
 npm run build
 ```
 
+## Ignoring project-specific files
+
+Create a `.backtrackignore` file at the project root to exclude folders or files from snapshots.
+
+```txt
+# Skip renders and bounced stems
+Exports
+Stems/final
+```
+
 ## Next sensible steps
 
 - Parse `.als` metadata for richer project summaries

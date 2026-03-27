@@ -52,6 +52,22 @@ describe('createSnapshotManifest', () => {
     const manifest = await createSnapshotManifest(projectDir);
     expect(manifest.files.map((file) => file.path)).toEqual(['Song.als']);
   });
+
+  it('respects .backtrackignore entries for project-specific exclusions', async () => {
+    const projectDir = await makeProject({
+      '.backtrackignore': '# comment\nExports\nStems/final\n',
+      'Song.als': 'kept',
+      'Exports/mixdown.wav': 'ignored',
+      'Stems/final/vox.wav': 'ignored',
+      'Stems/draft/vox.wav': 'kept too'
+    });
+
+    const manifest = await createSnapshotManifest(projectDir, {
+      includeExtensions: ['.als', '.wav']
+    });
+
+    expect(manifest.files.map((file) => file.path)).toEqual(['Song.als', 'Stems/draft/vox.wav']);
+  });
 });
 
 describe('diffSnapshotManifests', () => {
