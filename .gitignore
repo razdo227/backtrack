@@ -1,0 +1,35 @@
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Rust
+target/
+**/target/
+**/*.rs.bk
+
+# Node / Vite
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+**/.vite/
+
+# Environment files (secrets)
+.env*
+!.env.example
+
+# Tauri build output
+desktop/src-tauri/target/
+
+# Backtrack artifacts created in projects
+.backtrack/
+**/.backtrack/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*

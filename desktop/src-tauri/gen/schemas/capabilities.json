@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default permissions for Backtrack","local":true,"windows":["*"],"permissions":["dialog:allow-open","dialog:allow-save","core:default","shell:allow-open"]}}

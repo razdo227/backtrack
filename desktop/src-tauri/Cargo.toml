@@ -1,0 +1,37 @@
+[package]
+name = "backtrack-desktop"
+version = "0.1.0"
+description = "Backtrack Desktop Agent - Ableton Live project tracker"
+authors = ["you"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api", "tray-icon", "image-png", "protocol-asset"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-store = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-util = "0.7"
+notify = { version = "6", default-features = false, features = ["macos_kqueue"] }
+sha2 = "0.10"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-appender = "0.2"
+dirs = "5"
+rusqlite = { version = "0.30.0", features = ["bundled"] }
+walkdir = "2"
+regex = "1"
+
+# Our parser library
+backtrack-parser = { path = "../../parser-lib" }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
