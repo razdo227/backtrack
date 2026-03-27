@@ -15,6 +15,7 @@ dist/
 **/dist/
 .vite/
 **/.vite/
+coverage/
 
 # Environment files (secrets)
 .env*

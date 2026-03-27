@@ -1,0 +1,33 @@
+{
+  "name": "backtrack",
+  "version": "0.1.0",
+  "description": "Snapshot and diff utilities for tracking Ableton Live project files.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "backtrack": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist coverage",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "ableton",
+    "version-control",
+    "snapshot",
+    "music-production"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
