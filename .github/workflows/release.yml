@@ -30,6 +30,7 @@ jobs:
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
         with:
           projectPath: ./desktop
+          tagName: ${{ github.ref_name }}
           releaseName: 'Backtrack v__VERSION__'
           releaseBody: 'Automated release for Backtrack desktop.'
           releaseDraft: false
