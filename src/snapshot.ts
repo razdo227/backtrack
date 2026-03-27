@@ -3,7 +3,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import type { SnapshotDiff, SnapshotFile, SnapshotManifest } from './types.js';
 
-const DEFAULT_IGNORES = new Set(['.git', 'node_modules', 'dist', '.DS_Store']);
+const DEFAULT_IGNORES = new Set(['.git', 'node_modules', 'dist', '.DS_Store', '.backtrack']);
 
 export interface CreateSnapshotOptions {
   ignore?: string[];

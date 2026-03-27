@@ -21,3 +21,17 @@ export interface SnapshotDiff {
     after: SnapshotFile;
   }>;
 }
+
+export interface SnapshotRecord {
+  id: string;
+  projectRoot: string;
+  createdAt: string;
+  totalFiles: number;
+  totalSize: number;
+  manifestPath: string;
+}
+
+export interface SnapshotStoreIndex {
+  version: number;
+  snapshots: SnapshotRecord[];
+}
