@@ -146,3 +146,58 @@ fn parse_init_bytes(bytes: &[u8]) -> Option<BacktrackInitV1> {
         flags,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use std::path::PathBuf;
+
+    fn create_temp_project_dir() -> PathBuf {
+        let mut dir = std::env::temp_dir();
+        let unique = format!(
+            "backtrack-init-test-{}-{}",
+            std::process::id(),
+            now_epoch_ms().unwrap_or(0)
+        );
+        dir.push(unique);
+        fs::create_dir_all(&dir).expect("create temp project dir");
+        dir
+    }
+
+    fn cleanup_dir(path: &Path) {
+        let _ = fs::remove_dir_all(path);
+    }
+
+    #[test]
+    fn init_file_round_trip() {
+        let project_root = create_temp_project_dir();
+
+        let created = ensure_init_file(&project_root).expect("ensure init file");
+        assert!(created, "expected init file to be created");
+        assert!(has_init_file(&project_root));
+
+        let init = read_init_file(&project_root).expect("read init file");
+        assert!(init.created_ms > 0);
+        assert!(init.updated_ms >= init.created_ms);
+
+        let created_again = ensure_init_file(&project_root).expect("ensure init file again");
+        assert!(!created_again, "expected init file to already exist");
+
+        cleanup_dir(&project_root);
+    }
+
+    #[test]
+    fn rewrites_corrupt_init_file() {
+        let project_root = create_temp_project_dir();
+        let init_path = init_file_path(&project_root);
+        fs::create_dir_all(init_path.parent().unwrap()).expect("create .backtrack dir");
+        fs::write(&init_path, b"corrupt").expect("write corrupt init file");
+
+        let created = ensure_init_file(&project_root).expect("rewrite init file");
+        assert!(created, "expected corrupt init file to be rewritten");
+        assert!(read_init_file(&project_root).is_ok());
+
+        cleanup_dir(&project_root);
+    }
+}

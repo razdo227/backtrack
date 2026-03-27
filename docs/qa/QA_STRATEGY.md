@@ -163,15 +163,19 @@ Below is the practical test backlog in priority order.
    - unknown major version rejected in strict mode and tolerated in non-strict mode
 
 ### Desktop/Tauri
-10. **Command tests for project scanning**
+10. **Snapshot storage/restore smoke tests**
+    - init file round-trip
+    - corrupt init file recovery
+    - history DB write + read
+11. **Command tests for project scanning**
     - immediate child directories only
     - ignores hidden/backup folders
     - detects `.als` at nested depth
-11. **Project overview sorting/mtime tests**
+12. **Project overview sorting/mtime tests**
     - most recent `.als` takes priority over directory mtime
-12. **Version extraction tests**
+13. **Version extraction tests**
     - `Project v1.als`, `Project_v2.1.als`, `Project version 3.als`
-13. **Settings persistence tests**
+14. **Settings persistence tests**
     - save/load watched folders
     - nonexistent saved path is skipped safely
 

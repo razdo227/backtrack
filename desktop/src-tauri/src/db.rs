@@ -114,3 +114,57 @@ pub fn get_repo_history(project_root: &Path, limit: usize) -> Result<Vec<ChangeE
 
     Ok(changes)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::ChangeEvent;
+    use chrono::Utc;
+    use std::fs;
+    use std::path::PathBuf;
+
+    fn create_temp_project_dir() -> PathBuf {
+        let mut dir = std::env::temp_dir();
+        let unique = format!(
+            "backtrack-db-test-{}-{}",
+            std::process::id(),
+            chrono::Utc::now().timestamp_nanos()
+        );
+        dir.push(unique);
+        fs::create_dir_all(&dir).expect("create temp project dir");
+        dir
+    }
+
+    fn cleanup_dir(path: &Path) {
+        let _ = fs::remove_dir_all(path);
+    }
+
+    #[test]
+    fn log_change_and_restore_history() {
+        let project_root = create_temp_project_dir();
+
+        let change = ChangeEvent {
+            file_path: "Song.als".to_string(),
+            file_name: "Song.als".to_string(),
+            timestamp: Utc::now(),
+            summary: "1 track".to_string(),
+            track_count: 1,
+            device_count: 0,
+            file_hash: Some("hash".to_string()),
+            diff: None,
+            diff_summary: Some("Initial version".to_string()),
+        };
+
+        log_change(&project_root, &change).expect("log change");
+
+        let db_path = project_root.join(".backtrack").join("db.sqlite");
+        assert!(db_path.is_file(), "expected db.sqlite to be created");
+
+        let history = get_repo_history(&project_root, 10).expect("get repo history");
+        assert_eq!(history.len(), 1);
+        assert_eq!(history[0].file_path, "Song.als");
+        assert_eq!(history[0].summary, "1 track");
+
+        cleanup_dir(&project_root);
+    }
+}
