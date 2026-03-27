@@ -1,6 +1,6 @@
 {
   "name": "backtrack-desktop",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Backtrack Desktop Agent",
   "type": "module",
   "scripts": {
