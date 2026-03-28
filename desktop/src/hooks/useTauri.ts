@@ -71,6 +71,22 @@ export function useTauri() {
     }
   }, []);
 
+  // Add a folder by path directly (no dialog) — used by SetupWizard and startup sync
+  const addFolderByPath = useCallback(async (folder: string) => {
+    try {
+      const watched = await invoke<string[]>('get_watched_folders');
+      if (!watched.includes(folder)) {
+        await invoke('add_watched_folder', { folder });
+        setWatchedFolders((prev) => (prev.includes(folder) ? prev : [...prev, folder]));
+      }
+      const projects = await scanFolder(folder);
+      return { success: true, projects };
+    } catch (error) {
+      console.error('Failed to add folder by path:', error);
+      return { success: false, error: String(error) };
+    }
+  }, [scanFolder]);
+
   // Add watched folder
   const addFolder = useCallback(async () => {
     try {
@@ -243,6 +259,7 @@ export function useTauri() {
     scannedProjects, // New
     isScanning,      // New
     addFolder,
+    addFolderByPath,
     removeFolder,
     clearAllFolders,
     parseFile,

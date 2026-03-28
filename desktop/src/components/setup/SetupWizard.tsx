@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Folder, Clock, CheckCircle, ChevronRight, HardDrive, Sparkles, Save } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
+import { invoke } from '@tauri-apps/api/core';
 import { useAppStore } from '../../store/appStore';
 import type { SnapshotFrequency } from '../../store/appStore';
 
@@ -35,6 +36,7 @@ export function SetupWizard() {
   const [direction, setDirection] = useState(1);
   const [pickingFolder, setPickingFolder] = useState(false);
   const [pickingStorage, setPickingStorage] = useState(false);
+  const [starting, setStarting] = useState(false);
 
   const goTo = (step: 1 | 2 | 3) => {
     setDirection(step > setupStep ? 1 : -1);
@@ -175,11 +177,28 @@ export function SetupWizard() {
           </button>
         ) : (
           <button
-            onClick={completeSetup}
-            className="h-10 px-6 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-2"
+            onClick={async () => {
+              if (!projectsFolder) { completeSetup(); return; }
+              setStarting(true);
+              try {
+                // Register the folder with the Tauri backend file-watcher and
+                // kick off an initial project scan before navigating to main.
+                await invoke('add_watched_folder', { folder: projectsFolder }).catch(() => {});
+                await invoke('scan_for_projects', { path: projectsFolder }).catch(() => {});
+              } finally {
+                setStarting(false);
+              }
+              completeSetup();
+            }}
+            disabled={starting}
+            className="h-10 px-6 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 transition flex items-center gap-2"
           >
-            <CheckCircle size={14} />
-            Start Backtrack
+            {starting ? (
+              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+            ) : (
+              <CheckCircle size={14} />
+            )}
+            {starting ? 'Scanning…' : 'Start Backtrack'}
           </button>
         )}
       </div>

@@ -42,7 +42,20 @@ export default function App() {
     scannedProjects,
     isLoading,
     addFolder,
+    addFolderByPath,
   } = useTauri();
+
+  // Sync the projectsFolder chosen in SetupWizard into the Tauri backend's
+  // watched-folder list. This runs once after setup completes and on every
+  // cold start where the store has a folder but the backend doesn't yet know.
+  useEffect(() => {
+    if (!projectsFolder) return;
+    if (watchedFolders.includes(projectsFolder)) return;
+    // isLoading=true means the settings-loaded event hasn't fired yet;
+    // let that handler populate watchedFolders first, then reconcile.
+    if (isLoading) return;
+    addFolderByPath(projectsFolder);
+  }, [projectsFolder, watchedFolders, isLoading, addFolderByPath]);
 
   const [timelineWidth, setTimelineWidth] = useState(readTimelineWidth);
 
