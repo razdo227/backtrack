@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Folder, Clock, HardDrive, Moon, Sun, LogOut, Save } from 'lucide-react';
 import { open } from '@tauri-apps/plugin-dialog';
-import { useUser, useClerk } from '@clerk/clerk-react';
+import { useUser, useClerk, useAuth } from '@clerk/clerk-react';
 import { useAppStore } from '../store/appStore';
 import type { SnapshotFrequency } from '../store/appStore';
 
@@ -30,6 +30,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   } = useAppStore();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const { isSignedIn } = useAuth();
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     try { return (localStorage.getItem('theme') as 'dark' | 'light') ?? 'dark'; }
@@ -177,7 +178,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
 
             <div className="border-t border-zinc-800 p-4">
-              {user ? (
+              {isSignedIn && user ? (
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
                     <div className="text-xs text-zinc-400 truncate">{user.primaryEmailAddress?.emailAddress ?? user.username}</div>

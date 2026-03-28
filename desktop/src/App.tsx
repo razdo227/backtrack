@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Settings, Radio, PauseCircle, Sparkles } from 'lucide-react';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/clerk-react';
 import { useTauri } from './hooks/useTauri';
 import { Sidebar } from './components/layout/Sidebar';
 import { MainContent } from './components/layout/MainContent';
@@ -48,7 +48,7 @@ initTheme();
 
 export default function App() {
   const { screen, setScreen, isSettingsOpen, setIsSettingsOpen, selectedProjectPath, setSelectedProject, isWatching, projectsFolder } = useAppStore();
-  const { isSignedIn } = useUser();
+  const { isSignedIn } = useAuth();
   const {
     watchedFolders,
     recentChanges,
