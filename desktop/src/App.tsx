@@ -8,10 +8,8 @@ import { MainContent } from './components/layout/MainContent';
 import { SettingsPanel } from './components/SettingsPanel';
 import { AuthScreen } from './components/auth/AuthScreen';
 import { SetupWizard } from './components/setup/SetupWizard';
-import { SnapshotTimeline } from './components/layout/SnapshotTimeline';
+import { ChangeTreeGraph } from './components/layout/ChangeTreeGraph';
 import { useAppStore } from './store/appStore';
-import type { SnapshotEntry } from './components/layout/SnapshotTimeline';
-import type { ChangeEvent } from './types';
 
 const TIMELINE_WIDTH_KEY = 'backtrack.timeline.width';
 
@@ -21,17 +19,6 @@ function readTimelineWidth(): number {
     const v = raw ? Number(raw) : NaN;
     return Number.isFinite(v) ? v : 300;
   } catch { return 300; }
-}
-
-function changeEventToSnapshot(change: ChangeEvent, index: number): SnapshotEntry {
-  return {
-    id: change.file_hash ?? `change-${index}`,
-    timestamp: change.timestamp,
-    filesChanged: change.track_count ?? 1,
-    sizeDelta: 0,
-    label: change.summary || undefined,
-    fileHash: change.file_hash,
-  };
 }
 
 function initTheme() {
@@ -103,10 +90,6 @@ export default function App() {
 
   const currentProjectName = selectedProjectPath?.split(/[\\/]/).pop() || 'Select a Project';
 
-  const snapshots: SnapshotEntry[] = useMemo(
-    () => recentChanges.map(changeEventToSnapshot),
-    [recentChanges],
-  );
 
   const startResizeTimeline = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -213,12 +196,12 @@ export default function App() {
 
         <div className="shrink-0 flex flex-col border-l border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950" style={{ width: timelineWidth }}>
           <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
-            <h2 className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest">Snapshots</h2>
+            <h2 className="text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-widest">Change History</h2>
           </div>
           <div className="flex-1 overflow-y-auto">
-            <SnapshotTimeline
+            <ChangeTreeGraph
               projectPath={selectedProjectPath ?? undefined}
-              snapshots={snapshots}
+              liveChanges={recentChanges}
             />
           </div>
         </div>

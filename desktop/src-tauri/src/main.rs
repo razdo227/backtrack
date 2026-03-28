@@ -111,6 +111,7 @@ async fn main() {
             commands::initialize_projects,
             commands::debug_clear_initialization_data,
             commands::get_project_metadata,
+            commands::get_project_history,
         ])
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {

@@ -526,6 +526,20 @@ fn extract_version_from_filename(filename: &str) -> Option<String> {
     None
 }
 
+/// Return the change history for a specific project folder, newest first.
+#[tauri::command]
+pub async fn get_project_history(
+    project_path: String,
+    limit: usize,
+) -> Result<Vec<ChangeEvent>, String> {
+    let path = PathBuf::from(project_path);
+    tokio::task::spawn_blocking(move || {
+        crate::db::get_repo_history(&path, limit).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
 pub async fn load_settings(app: AppHandle) -> Result<(), String> {
     info!("Loading settings");
 
