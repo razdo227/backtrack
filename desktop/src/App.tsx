@@ -133,12 +133,12 @@ export default function App() {
   return (
     <div className="h-screen w-screen bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white flex flex-col overflow-hidden" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <AnimatePresence>
-        {!isSignedIn && (
+        {screen === 'auth' && !isSignedIn && (
           <motion.div key="auth" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <AuthScreen />
           </motion.div>
         )}
-        {isSignedIn && screen === 'setup' && (
+        {screen === 'setup' && (
           <motion.div key="setup" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <SetupWizard />
           </motion.div>
