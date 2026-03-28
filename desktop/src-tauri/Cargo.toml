@@ -1,6 +1,6 @@
 [package]
 name = "backtrack-desktop"
-version = "0.1.5"
+version = "0.1.6"
 description = "Backtrack Desktop Agent - Ableton Live project tracker"
 authors = ["you"]
 edition = "2021"
