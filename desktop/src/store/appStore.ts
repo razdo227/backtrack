@@ -17,6 +17,7 @@ interface AppState {
   screen: Screen;
   setupStep: 1 | 2 | 3;
   isSettingsOpen: boolean;
+  isAuthSkipped: boolean;
 
   // Config
   projectsFolder: string | null;
@@ -38,6 +39,7 @@ interface AppState {
   setSelectedProject: (path: string | null) => void;
   setIsWatching: (watching: boolean) => void;
   setIsSettingsOpen: (open: boolean) => void;
+  setAuthSkipped: (skipped: boolean) => void;
   completeSetup: () => void;
 }
 
@@ -74,6 +76,7 @@ export const useAppStore = create<AppState>((set) => ({
   screen: (saved.screen as Screen) ?? 'auth',
   setupStep: 1,
   isSettingsOpen: false,
+  isAuthSkipped: false,
   projectsFolder: saved.projectsFolder ?? null,
   storageDir: saved.storageDir ?? `${(globalThis as { __HOME__?: string }).__HOME__ ?? '~'}/.backtrack`,
   snapshotFrequency: (saved.snapshotFrequency as SnapshotFrequency) ?? 'on-save',
@@ -115,6 +118,7 @@ export const useAppStore = create<AppState>((set) => ({
   setSelectedProject: (selectedProjectPath) => set({ selectedProjectPath }),
   setIsWatching: (isWatching) => set({ isWatching }),
   setIsSettingsOpen: (isSettingsOpen) => set({ isSettingsOpen }),
+  setAuthSkipped: (isAuthSkipped) => set({ isAuthSkipped }),
   completeSetup: () => {
     set((state) => {
       persistState({ ...state, screen: 'main' });

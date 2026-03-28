@@ -47,7 +47,7 @@ function initTheme() {
 initTheme();
 
 export default function App() {
-  const { screen, setScreen, isSettingsOpen, setIsSettingsOpen, selectedProjectPath, setSelectedProject, isWatching, projectsFolder } = useAppStore();
+  const { screen, setScreen, isSettingsOpen, setIsSettingsOpen, selectedProjectPath, setSelectedProject, isWatching, projectsFolder, isAuthSkipped, setAuthSkipped } = useAppStore();
   const { isSignedIn } = useAuth();
   const {
     watchedFolders,
@@ -60,14 +60,15 @@ export default function App() {
   const [timelineWidth, setTimelineWidth] = useState(readTimelineWidth);
 
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!isSignedIn && !isAuthSkipped) {
       setScreen('auth');
       return;
     }
-    if (screen === 'auth') {
+    if (isSignedIn && screen === 'auth') {
+      setAuthSkipped(false);
       setScreen(projectsFolder ? 'main' : 'setup');
     }
-  }, [isSignedIn, screen, setScreen, projectsFolder]);
+  }, [isSignedIn, isAuthSkipped, screen, setScreen, setAuthSkipped, projectsFolder]);
 
   useEffect(() => {
     try { localStorage.setItem(TIMELINE_WIDTH_KEY, String(timelineWidth)); }
